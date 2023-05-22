@@ -28,8 +28,8 @@ public class ItemController {
     // 商品一覧の表示
     @GetMapping
     public String index(Model model) {
-    	List<Item> items = this.itemService.findAll();
-    	System.out.println(items.toString());
+    	List<Item> items = this.itemService.findByDeletedAtIsNull();
+    	//System.out.println(items.toString());
     	model.addAttribute("items", items);
         return "item/index";
     }
@@ -45,6 +45,7 @@ public class ItemController {
     @PostMapping("toroku")
     public String toroku(ItemForm itemForm) {
         // 処理を追加
+    	this.itemService.save(itemForm);
         return "redirect:/item";
     }
 
@@ -53,6 +54,10 @@ public class ItemController {
     public String henshuPage(@PathVariable("id") Integer id, Model model
                              , @ModelAttribute("itemForm") ItemForm itemForm) {
         // 処理を追加
+    	Item item = this.itemService.findById(id);
+    	itemForm.setName(item.getName());
+    	itemForm.setPrice(item.getPrice());
+    	model.addAttribute("id", id);
         return "item/henshuPage";
     }
 
@@ -60,7 +65,7 @@ public class ItemController {
     @PostMapping("henshu/{id}")
     public String henshu(@PathVariable("id") Integer id, @ModelAttribute("itemForm") ItemForm itemForm) {
         // 処理を追加
-
+    	this.itemService.update(id, itemForm);
         return "redirect:/item";
     }
 
@@ -68,6 +73,7 @@ public class ItemController {
     @PostMapping("sakujo/{id}")
     public String sakujo(@PathVariable("id") Integer id) {
         // 処理を追加
+    	this.itemService.delete(id);
         return "redirect:/item";
     }
 
